@@ -11,3 +11,9 @@ book.delete()
 # Verify deletion by checking the queryset
 books = Book.objects.all()
 print(books)
+
+# Output of the delete operation
+(1, {'bookshelf.Book': 1})
+
+# Output of the verification (should be an empty queryset if deletion was successful)
+<QuerySet []>
