@@ -24,7 +24,7 @@ def user_login(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('home')  # Redirect to a home page or dashboard
+            return redirect('home')
     else:
         form = AuthenticationForm()
     return render(request, 'login.html', {'form': form})
@@ -44,3 +44,14 @@ def user_register(request):
     else:
         form = UserCreationForm()
     return render(request, 'register.html', {'form': form})
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('login')  # Redirect to login after registration
+    else:
+        form = UserCreationForm()
+    return render(request, 'relationship_app/register.html', {'form': form})
