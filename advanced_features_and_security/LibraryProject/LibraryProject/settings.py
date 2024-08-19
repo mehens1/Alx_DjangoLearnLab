@@ -1,6 +1,12 @@
 import os
 
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
+SECURE_SSL_REDIRECT = True
+
+# HTTP Strict Transport Security (HSTS) settings
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 
 DEBUG = False
 ALLOWED_HOSTS = ['yourdomain.com', 'www.yourdomain.com']
