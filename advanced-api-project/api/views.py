@@ -4,7 +4,8 @@ from .models import Book
 from .serializers import BookSerializer
 from .filters import BookFilte
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.filters import SearchFilter
+from rest_framework.filters import OrderingFilter
 from django_filters import rest_framework
 
 class BookListView(generics.ListCreateAPIView):
