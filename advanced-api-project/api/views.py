@@ -12,8 +12,23 @@ class BookListView(generics.ListCreateAPIView):
     get:
     Return a list of all books with optional filtering, searching, and ordering.
 
-    post:
-    Create a new book. Authenticated users only.
+    Available filters:
+    - title
+    - author
+    - publication_year
+
+    Available search fields:
+    - title
+    - author
+
+    Available ordering fields:
+    - title (default)
+    - publication_year
+
+    Examples:
+    - Filter by title: /books/?title=SomeTitle
+    - Search by author: /books/?search=AuthorName
+    - Order by publication year: /books/?ordering=-publication_year
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
