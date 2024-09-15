@@ -32,6 +32,9 @@ def profile(request):
         form = ProfileUpdateForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
+            # Optionally, add a success message
+            from django.contrib import messages
+            messages.success(request, 'Your profile has been updated!')
             return redirect('profile')
     else:
         form = ProfileUpdateForm(instance=request.user)
