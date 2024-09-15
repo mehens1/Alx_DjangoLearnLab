@@ -1,5 +1,3 @@
-# blog/views.py
-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.shortcuts import redirect
 from django.contrib.auth import login, authenticate
@@ -12,7 +10,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from .models import Post, Comment
 from .forms import PostForm, CommentForm
-
+from django.db.models import Q
+from taggit.models import Tag
 
 class UserLoginView(LoginView):
     template_name = 'blog/login.html'
@@ -157,3 +156,22 @@ class CommentDeleteView(DeleteView):
 
     def get_success_url(self):
         return reverse_lazy('post-detail', kwargs={'pk': self.kwargs['post_pk']})
+
+
+def search_posts(request):
+    query = request.GET.get('q')
+    if query:
+        posts = Post.objects.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct()
+    else:
+        posts = Post.objects.all()
+
+    return render(request, 'blog/search_results.html', {'posts': posts, 'query': query})
+
+def posts_by_tag(request, tag_name):
+    tag = Tag.objects.get(name=tag_name)
+    posts = Post.objects.filter(tags__in=[tag])
+    return render(request, 'blog/tagged_posts.html', {'posts': posts, 'tag_name': tag_name})
