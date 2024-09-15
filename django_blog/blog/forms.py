@@ -5,6 +5,7 @@ from .models import Post
 from .models import Comment
 from taggit.forms import TagField
 from django.utils.html import format_html
+from .widgets import TagWidget
 
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True, help_text='Required. Enter a valid email address.')
@@ -21,7 +22,7 @@ class ProfileUpdateForm(forms.ModelForm):
         fields = ['username', 'email']
 
 class PostForm(forms.ModelForm):
-    tags = TagField(required=False)
+    tags = forms.CharField(widget=TagWidget(), required=False)
     class Meta:
         model = Post
         fields = ['title', 'content', 'tags']
@@ -33,5 +34,4 @@ class CommentForm(forms.ModelForm):
         
 class TagWidget(forms.Widget):
     def render(self, name, value, attrs=None, renderer=None):
-        # Customize this method to render tags as needed
         return format_html('<input type="text" name="{}" value="{}" />', name, value)
