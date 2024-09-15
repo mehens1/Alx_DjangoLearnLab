@@ -13,6 +13,16 @@ from .forms import PostForm, CommentForm
 from django.db.models import Q
 from taggit.models import Tag
 
+class PostByTagListView(ListView):
+    model = Post
+    template_name = 'blog/post_list.html'  # Ensure this template handles tag-based filtering
+    context_object_name = 'posts'
+    
+    def get_queryset(self):
+        tag_slug = self.kwargs.get('tag_slug')
+        return Post.objects.filter(tags__slug=tag_slug)
+
+
 class UserLoginView(LoginView):
     template_name = 'blog/login.html'
 
@@ -48,6 +58,11 @@ class PostListView(ListView):
     template_name = 'blog/post_list.html'
     context_object_name = 'posts'
     ordering = ['-published_date']
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tags'] = Tag.objects.all()  # Pass all tags to the template
+        return context
 
 class PostDetailView(DetailView):
     model = Post
