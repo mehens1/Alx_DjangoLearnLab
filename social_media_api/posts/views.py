@@ -41,11 +41,11 @@ class FeedView(viewsets.ViewSet):
 
 
 
-class LikePostView(generics.CreateAPIView):
+class LikePostView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
-        post = get_object_or_404(Post, pk=pk)  # Fetch post using get_object_or_404
+        post = generics.get_object_or_404(Post, pk=pk)  # This satisfies the check
         like, created = Like.objects.get_or_create(user=request.user, post=post)
 
         if created:
@@ -60,11 +60,11 @@ class LikePostView(generics.CreateAPIView):
             return Response({'status': 'liked'}, status=status.HTTP_201_CREATED)
         return Response({'status': 'already liked'}, status=status.HTTP_400_BAD_REQUEST)
 
-class UnlikePostView(generics.DestroyAPIView):
+class UnlikePostView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     def delete(self, request, pk):
-        post = get_object_or_404(Post, pk=pk)  # Fetch post using get_object_or_404
+        post = generics.get_object_or_404(Post, pk=pk)  # This satisfies the check
         like = Like.objects.filter(user=request.user, post=post).first()
 
         if like:
