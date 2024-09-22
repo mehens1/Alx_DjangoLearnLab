@@ -5,6 +5,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 from .views import UserViewSet
+from .views import FollowUserView, UnfollowUserView
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -18,4 +19,6 @@ urlpatterns = [
     path('profile/', ProfileView.as_view(), name='profile'),
     path('admin/', admin.site.urls),
     path('api/', include('accounts.urls')),
+    path('follow/<int:user_id>/', FollowUserView.as_view(), name='follow_user'),
+    path('unfollow/<int:user_id>/', UnfollowUserView.as_view(), name='unfollow_user'),
 ]
