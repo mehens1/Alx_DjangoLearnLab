@@ -42,3 +42,10 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'first_name', 'last_name', 'bio')
+
+class TokenSerializer(serializers.ModelSerializer):
+    auth_token = serializers.CharField(source='key')
+
+    class Meta:
+        model = Token
+        fields = ('auth_token', 'created')
