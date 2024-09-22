@@ -1,50 +1,37 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
 from rest_framework.authtoken.models import Token
 
-# Get the user model
 User = get_user_model()
 
-# Serializer for user registration
-class RegisterSerializer(serializers.ModelSerializer):
+class RegisterSerializer(serializers.Serializer):
     username = serializers.CharField(required=True)
     email = serializers.CharField(required=True)
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-    password2 = serializers.CharField(write_only=True, required=True)
+    confirm_password = serializers.CharField(write_only=True, required=True)
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
     bio = serializers.CharField(required=False)
-    # CharField to handle password input securely
-    # password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
-    # password_confirm = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
 
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'password', 'password_confirm']
+    def validate(self, attrs):
+        if attrs['password'] != attrs['confirm_password']:
+            raise serializers.ValidationError({"password": "Password fields didn't match."})
+        return attrs
 
-    # Validate that passwords match
-    def validate(self, data):
-        if data['password'] != data['password_confirm']:
-            raise serializers.ValidationError("Passwords do not match.")
-        return data
-
-    # Create a new user
     def create(self, validated_data):
-        # Remove password_confirm from validated data since we don't store it
-        validated_data.pop('password_confirm')
-
-        # Use get_user_model().objects.create_user to create a new user
-        user = get_user_model().objects.create_user(
+        user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
             password=validated_data['password']
         )
-
-        # Create a token for the new user
+        user.bio = validated_data.get('bio', '')
+        user.save()
         Token.objects.create(user=user)
-
         return user
-    
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
