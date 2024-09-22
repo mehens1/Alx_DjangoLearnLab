@@ -1,36 +1,39 @@
 from rest_framework import serializers
-from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
+from rest_framework.authtoken.models import Token
 
-# Getting the user model
+# Get the User model
 User = get_user_model()
 
+# Serializer for user registration
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=True)
-    password_confirm = serializers.CharField(write_only=True, required=True)
+    # Using CharField to handle password input
+    password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
+    password_confirm = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
 
     class Meta:
         model = User
         fields = ['username', 'email', 'password', 'password_confirm']
 
-    def validate(self, attrs):
-        # Ensure password and password_confirm are the same
-        if attrs['password'] != attrs['password_confirm']:
-            raise serializers.ValidationError({"password": "Passwords do not match."})
-        return attrs
+    # Validate that the password and password confirmation match
+    def validate(self, data):
+        if data['password'] != data['password_confirm']:
+            raise serializers.ValidationError("Passwords do not match.")
+        return data
 
+    # Create a new user and generate a token for them
     def create(self, validated_data):
-        # Remove the password_confirm key since we don't need it anymore
+        # Remove password_confirm from validated data as we don't need to save it
         validated_data.pop('password_confirm')
 
-        # Create a new user
-        user = get_user_model().objects.create_user(
+        # Create a new user with the provided data
+        user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
             password=validated_data['password']
         )
 
-        # Generate token for the new user
+        # Create a token for the new user
         Token.objects.create(user=user)
 
         return user
