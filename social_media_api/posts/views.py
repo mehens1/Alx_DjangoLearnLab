@@ -9,6 +9,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from .models import Post, Like
 from notifications.models import Notification
+from django.shortcuts import get_object_or_404
 
 User = get_user_model()
 
@@ -39,11 +40,12 @@ class FeedView(viewsets.ViewSet):
         return Response(serializer.data)
 
 
+
 class LikePostView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
-        post = Post.objects.get(pk=pk)
+        post = get_object_or_404(Post, pk=pk)  # Fetch post using get_object_or_404
         like, created = Like.objects.get_or_create(user=request.user, post=post)
 
         if created:
@@ -62,10 +64,11 @@ class UnlikePostView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated]
 
     def delete(self, request, pk):
-        post = Post.objects.get(pk=pk)
+        post = get_object_or_404(Post, pk=pk)  # Fetch post using get_object_or_404
         like = Like.objects.filter(user=request.user, post=post).first()
 
         if like:
             like.delete()
             return Response({'status': 'unliked'}, status=status.HTTP_204_NO_CONTENT)
         return Response({'status': 'not liked'}, status=status.HTTP_400_BAD_REQUEST)
+
