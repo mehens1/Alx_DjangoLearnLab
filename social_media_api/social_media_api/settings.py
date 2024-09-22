@@ -26,6 +26,10 @@ SECRET_KEY = 'django-insecure-u^^h7gs-f1(9_3b633$h9$^_0538zq=7%f+xn#0rf@&eu)%zl3
 DEBUG = False
 
 ALLOWED_HOSTS = ['mehenisamson.com', '197.210.52.161']
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_SSL_REDIRECT = True
 
 
 # Application definition
